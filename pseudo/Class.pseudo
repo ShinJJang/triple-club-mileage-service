@@ -24,6 +24,7 @@ class ReviewDTO {
     List<UUID> photoIds
     String content
     Datetime createdAt
+    Datetime updatedAt
 }
 
 class PointTransactionDTO {
