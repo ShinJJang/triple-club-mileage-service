@@ -6,11 +6,13 @@
 - [요구사항](#요구사항)
 - [가정한 것](#가정한-것)
 - [추가적으로 고민할 것](#추가적으로-고민할-것)
-- [Pseudo code](pseudo/)
-- [Schema DDL](schema.sql)
-- [Project Structure](#Project-Structure)
-- [API Spec](#API-Spec)
-- [Schema Info](#Schema-Info)
+- Assignments
+  - [Pseudo code directory](pseudo/)
+  - [Schema DDL](schema.sql)
+- Documents
+  - [Project Structure](#Project-Structure)
+  - [API Spec](#API-Spec)
+  - [Schema Info](#Schema-Info)
 
 ## 트리플 여행자 클럽 마일리지가 무엇인가요
 
@@ -38,6 +40,7 @@
   - 인덱스를 정의합니다.
 
 ### 포인트 서비스의 리뷰 작성 이벤트 API
+
 ```json
 POST /events
 
@@ -65,7 +68,7 @@ POST /events
 - 포인트 서비스의 Endpoint는 외부에서 접근할 수 없습니다.
   - 리뷰 서비스 또는 사용자 서비스를 통해 접근합니다.
 - 사용자에게 보여주는 포인트 트랜잭션의 메시지는 DeatilType과 Action을 조합하여, 클라이언트에서 제어합니다.
-  - DB에서 관리할 만큼 자주 바뀌거나 케이스가 많을 때 테이블로 만들고, PointTransaction 테이블에 ForeignKey로 넣습니다. 
+  - DB에서 관리할 만큼 자주 바뀌거나 케이스가 많을 때 테이블로 만들고, PointTransaction 테이블에 ForeignKey로 넣습니다.
 
 ## 추가적으로 고민할 것
 
@@ -81,7 +84,8 @@ POST /events
   - REST API에 더 적합한 방식으로 생각됨
   - Action enum에 대한 의존도를 줄일 수 있음
 
-## Project Structure 
+## Project Structure
+
 ```bash
 ➜ tree triple-club-mileage-service -L 2 -C
 triple-club-mileage-service
@@ -97,6 +101,7 @@ triple-club-mileage-service
 ```
 
 ## API Spec
+
 | Action                              | API path           | Parameter                                          | Body                                                                                                                                                                                                                                                                                                                                       | Success Response                                                                                                                                                                                                                                                                                            | Fail Response                                                                                             |
 | ----------------------------------- | ------------------ | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
 | [이벤트] 이벤트에 따른 포인트 변경                | POST /events/      |                                                    | {"type": "REVIEW", "action": "ADD", /* "MOD", "DELETE" */"reviewId": "240a0658-dc5f-4878-9381-ebb7b2667772", "content": "좋아요!", "attachedPhotoIds": ["e4d1a64e-a531-46de-88d0-ff0ed70c0bb8", "afb0cef2-851d-4a50-bb07-9cc15cbdc332"], "userId": "3ede0ef2-92b7-4817-a5f3-0c575361f745", "placeId": "2e4baf1c-5acb-4efb-a1af-eddada31b00f"} | {"pointTrasactionIds": ["240a0658-240a0658-240a0658-240a0658", ...], "pointDiff": 3, point: 3}                                                                                                                                                                                                              | 400 {"error": "not suport event type: TEST"},<br> 404 {"error": "not exist review with reviewId: 240a0658-240a0658-240a0658-240a0658"}                                                               |
@@ -106,4 +111,5 @@ triple-club-mileage-service
 | [포인트 트랜잭션] 전체 포인트 트랜잭션 Paging 조회    | GET /points/       | {&pageNum=1&size=20 /* default 값 */}               |                                                                                                                                                                                                                                                                                                                                            | 위와 동일                                                                                                                                                                                                                                                                                                       |                                                                                                           |
 
 ## Schema Info
+
 ![Schema Info](/img/schema_screenshot.png)
