@@ -7,7 +7,9 @@
 - [가정한 것](##가정한-것)
 - [추가적으로 고민할 것](##추가적으로-고민할-것)
 - [Pseudo code](pseudo/)
-- [Schema](schema.sql)
+- [Schema DDL](schema.sql)
+- [Project Structure](##Project-Structure)
+- [API Spec](##API-Spec)
 
 ## 트리플 여행자 클럽 마일리지가 무엇인가요
 
@@ -74,3 +76,27 @@ POST /events
 - 리뷰 작성 이벤트 API의 action을 HTTP header method로 대체
   - REST API에 더 적합한 방식으로 생각됨
   - Action enum에 대한 의존도를 줄일 수 있음
+
+## Project Structure 
+```bash
+➜ tree triple-club-mileage-service -L 2 -C
+triple-club-mileage-service
+├── LICENSE
+├── README.md                      --->  과제 설명
+├── pseudo                         --->  pseduo code dir
+│   ├── Class.pseudo               --->  class, enum
+│   ├── EventController.pseudo     --->  리뷰 이벤트 API 컨트롤러
+│   ├── PointTransactionController --->  포인트 트랜잭션 API 컨트롤러
+│   ├── PointTransactionService    --->  포인트 트랜잭션 서비스 
+│   └── ReviewEventService.pseudo  --->  리뷰 이벤트 서비스
+└── schema.sql                     --->  DDL SQL 
+```
+
+## API Spec
+| Action                              | API path           | Parameter                                          | Body                                                                                                                                                                                                                                                                                                                                       | Success Response                                                                                                                                                                                                                                                                                            | Fail Response                                                                                             |
+| ----------------------------------- | ------------------ | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| [이벤트] 이벤트에 따른 포인트 변경                | POST /events/      |                                                    | {"type": "REVIEW", "action": "ADD", /* "MOD", "DELETE" */"reviewId": "240a0658-dc5f-4878-9381-ebb7b2667772", "content": "좋아요!", "attachedPhotoIds": ["e4d1a64e-a531-46de-88d0-ff0ed70c0bb8", "afb0cef2-851d-4a50-bb07-9cc15cbdc332"], "userId": "3ede0ef2-92b7-4817-a5f3-0c575361f745", "placeId": "2e4baf1c-5acb-4efb-a1af-eddada31b00f"} | {"pointTrasactionIds": ["240a0658-240a0658-240a0658-240a0658", ...], "pointDiff": 3, point: 3}                                                                                                                                                                                                              | 400 {"error": "not suport event type: TEST"}                                                              |
+| [포인트 트랜잭션] UUID로 조회                 | GET /points/{UUID} |                                                    |                                                                                                                                                                                                                                                                                                                                            | {"pointTransactionId": "240a0658-240a0658-240a0658-240a0658", "userId": "3ede0ef2-92b7-4817-a5f3-0c575361f745", "eventType": "REVIEW" /* "REVERVATION", "EXPERIENCE" \*/, "action": "ADD", /* "MOD", "DELETE" \*/, detailType: "REVIEW_TEXT" /* "REVIEW_PHOTO", "REVIEW_FIRST" \*/, point: 3, pointDiff: 1} | 404 {"error": "not exist point transaction with pointTransactionId: 240a0658-240a0658-240a0658-240a0658"} |
+| [포인트 트랜잭션] User로 마지막 포인트 트랜잭션 조회    | GET /points/last   | ?userId=[UUID]                                     |                                                                                                                                                                                                                                                                                                                                            | 위와 동일                                                                                                                                                                                                                                                                                                       | 404 {"error": "not exist point transaction with user transaction: 240a0658-240a0658-240a0658-240a0658"}   |
+| [포인트 트랜잭션] User로 포인트 트랜잭션 Paging 조회 | GET /points/       | ?userId=[UUID]{&pageNum=1&size=20 /* default 값 */} |                                                                                                                                                                                                                                                                                                                                            | {"total": 42, "pageNum": 1, "size": 20, "count": 20, "isLastPage": False, items: [ {/* 포인트 트랜잭션 조회 결과 */}, ... ] }                                                                                                                                                                                          |                                                                                                           |
+| [포인트 트랜잭션] 전체 포인트 트랜잭션 Paging 조회    | GET /points/       | {&pageNum=1&size=20 /* default 값 */}               |                                                                                                                                                                                                                                                                                                                                            | 위와 동일                                                                                                                                                                                                                                                                                                       |                                                                                                           |
