@@ -14,6 +14,5 @@ CREATE TABLE point_trasaction (
     PRIMARY KEY(id),
     INDEX idx_userId (userId),
     INDEX idx_event (eventType, eventId),
-    INDEX idx_createdAt (createdAt),
-
+    INDEX idx_createdAt (createdAt)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
