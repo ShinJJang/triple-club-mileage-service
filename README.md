@@ -10,6 +10,7 @@
 - [Schema DDL](schema.sql)
 - [Project Structure](#Project-Structure)
 - [API Spec](#API-Spec)
+- [Schema Info](#Schema-Info)
 
 ## 트리플 여행자 클럽 마일리지가 무엇인가요
 
@@ -103,3 +104,6 @@ triple-club-mileage-service
 | [포인트 트랜잭션] User로 마지막 포인트 트랜잭션 조회    | GET /points/last   | ?userId=[UUID]                                     |                                                                                                                                                                                                                                                                                                                                            | 위와 동일                                                                                                                                                                                                                                                                                                       | 404 {"error": "not exist point transaction with user transaction: 240a0658-240a0658-240a0658-240a0658"}   |
 | [포인트 트랜잭션] User로 포인트 트랜잭션 Paging 조회 | GET /points/       | ?userId=[UUID]{&pageNum=1&size=20 /* default 값 */} |                                                                                                                                                                                                                                                                                                                                            | {"total": 42, "pageNum": 1, "size": 20, "count": 20, "isLastPage": False, items: [ {/* 포인트 트랜잭션 조회 결과 */}, ... ] }                                                                                                                                                                                          |                                                                                                           |
 | [포인트 트랜잭션] 전체 포인트 트랜잭션 Paging 조회    | GET /points/       | {&pageNum=1&size=20 /* default 값 */}               |                                                                                                                                                                                                                                                                                                                                            | 위와 동일                                                                                                                                                                                                                                                                                                       |                                                                                                           |
+
+## Schema Info
+![Schema Info](/img/schema_screenshot.png)
