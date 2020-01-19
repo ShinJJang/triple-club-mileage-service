@@ -36,6 +36,7 @@ class PointTransactionDTO {
     DetailType detailType
     int point
     int pointDiff
+    Datetime createdAt
 
     String getUUID() {
         return makeUUID(id)
