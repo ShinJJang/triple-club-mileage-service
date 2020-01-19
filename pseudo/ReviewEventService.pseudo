@@ -60,7 +60,7 @@ class ReviewEventService {
             reviewEventDto.userId,
             EventType.REVIEW,
             reviewEventDto.reviewId,
-            reviewEventDto.action,           
+            reviewEventDto.action,
             DetailType.REVIEW_TEXT,
             pointDiff
         )
@@ -120,15 +120,13 @@ class ReviewEventService {
         }
 
         int pointDiff = 0
-        if (reviewEventDto.reviewId == placeFirstReviewDto.reviewId) {
-            if (reviewEventDto == Action.ADD && (pointTransactionDto == null || pointTransactionDto.pointDiff == -1)) {
-                # 첫 리뷰: 1점
-                pointDiff = 1
-            } 
-            else if (reviewEventDto == Action.DELETE && (pointTransactionDto != null || pointTransactionDto.pointDiff == 1)) {
-                # 첫 리뷰를 작성하고 리뷰 삭제: 1점 회수
-                pointDiff = -1
-            }
+        if (reviewEventDto == Action.ADD && (pointTransactionDto == null || pointTransactionDto.pointDiff == -1)) {
+            # 첫 리뷰: 1점
+            pointDiff = 1
+        } 
+        else if (reviewEventDto == Action.DELETE && (pointTransactionDto != null || pointTransactionDto.pointDiff == 1)) {
+            # 첫 리뷰를 작성하고 리뷰 삭제: 1점 회수
+            pointDiff = -1
         }
 
         # 변경사항 없음
