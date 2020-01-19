@@ -145,4 +145,5 @@ class ReviewEventService {
             pointDiff
         )
     }
+    
 }

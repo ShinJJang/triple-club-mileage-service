@@ -32,4 +32,5 @@ class PointTransactionService {
         # userId의 마지막 트랜잭션에서 pointDiff를 더하여, point transaction을 저장
         return pointTransactionRepo.create(userId, eventType, eventId, action, detailType, pointDiff)
     }
+    
 }

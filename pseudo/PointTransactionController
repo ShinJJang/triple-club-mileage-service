@@ -27,3 +27,5 @@ class PointTransactionController {
         # user의 point transaction paging으로 반환
         return pointTransactionService.getPage(userId, pageNum, size)
     }
+    
+}
