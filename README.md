@@ -2,14 +2,14 @@
 
 > [Coding assignment] 트리플여행자 클럽 마일리지 서비스
 
-- [트리플 여행자 클럽 마일리지란?](##트리플-여행자-클럽-마일리지가-무엇인가요)
-- [요구사항](##요구사항)
-- [가정한 것](##가정한-것)
-- [추가적으로 고민할 것](##추가적으로-고민할-것)
+- [트리플 여행자 클럽 마일리지란?](#트리플-여행자-클럽-마일리지가-무엇인가요)
+- [요구사항](#요구사항)
+- [가정한 것](#가정한-것)
+- [추가적으로 고민할 것](#추가적으로-고민할-것)
 - [Pseudo code](pseudo/)
 - [Schema DDL](schema.sql)
-- [Project Structure](##Project-Structure)
-- [API Spec](##API-Spec)
+- [Project Structure](#Project-Structure)
+- [API Spec](#API-Spec)
 
 ## 트리플 여행자 클럽 마일리지가 무엇인가요
 
