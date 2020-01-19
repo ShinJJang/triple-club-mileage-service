@@ -1,0 +1,148 @@
+class ReviewEventService {
+
+    # Spring의 Bean DI를 가정
+    @Autowired
+    PointTransactionService pointTransactionService
+
+    # 하나의 트랜잭션으로 묶임
+    @Transaction
+    EventResponseDTO changePoint(EventDto eventDto) {
+        ReviewEventDto reviewEventDto = (ReviewEventDto) eventDto        
+        List<PointTransactionDTO> pointTransactionDtoList = new List<>()
+        
+        # 리뷰 글 포인트 변경(적립 또는 회수)
+        PointTransactionDTO reviewTextPointTransactionDto = changeReviewTextPoint(reviewEventDto)
+        if (reviewTextPointTransactionDto != null) {
+            pointTransactionDtoList.add(reviewTextPointTransactionDto)
+        }
+        
+        # 리뷰 사진 포인트 변경(적립 또는 회수)
+        PointTransactionDTO reviewPhotoPointTransactionDto = changeReviewPhotoPoint(reviewEventDto)
+        if (reviewPhotoPointTransactionDto != null) {
+            pointTransactionDtoList.add(reviewPhotoPointTransactionDto)
+        }
+
+        # 첫 리뷰 포인트 변경(적립 또는 회수)
+        PointTransactionDTO reviewFirstPointTransactionDto = changeReviewFirstPoint(reviewEventDto)
+        if (reviewFirstPointTransactionDto != null) {
+            pointTransactionDtoList.add(reviewFirstPointTransactionDto)
+        }
+
+        return new EventResponseDTO(            
+            pointTransactionDtoList.toValues('pointTransactionId'),  # pointTransactionUUID의 List
+            sum(pointTransactionDtoList.toValues('pointDiff')),  # 해당 Event로 변경된 포인트            
+            pointTransactionDtoList.last().point,  # 마지막 Transaction의 point (현재 포인트)
+        )
+    }
+
+    PointTransactionDTO changeReviewTextPoint(ReviewEventDto reviewEventDto) {                
+        # 장소와 사용자, 리뷰 글 작성에 대한 마지막 트랜잭션
+        PointTransactionDTO pointTransactionDto = pointTransactionService.getLast(
+                        reviewEventDto.userId, reviewEventDto.eventType, reviewEventDto.placeId, DetailType.REVIEW_TEXT)
+
+        int contentLength = reviewEventDto.content.length()
+        int pointDiff = 0
+        
+        if (contentLength > 0 && (pointTransactionDto == null || pointTransactionDto.pointDiff == -1)) {
+            # 1자 이상 텍스트 작성: 1점
+            pointDiff = 1
+        }                
+        else if (contentLength == 0 && pointTransactionDto.pointDiff == 1) {
+            # 0자 텍스트(글 삭제): 1점 회수
+            pointDiff = -1
+        }
+
+        if (pointDiff == 0) {
+            return null
+        }
+
+        return pointTransactionService.create(
+            reviewEventDto.userId,
+            EventType.REVIEW,
+            reviewEventDto.reviewId,
+            reviewEventDto.action,           
+            DetailType.REVIEW_TEXT,
+            pointDiff
+        )
+    }
+
+    PointTransactionDTO changeReviewPhotoPoint(ReviewEventDto reviewEventDto) {
+        # 장소와 사용자, 리뷰 사진 첨부에 대한 마지막 트랜잭션
+        PointTransactionDTO pointTransactionDto = pointTransactionService.getLast(
+                        reviewEventDto.userId, reviewEventDto.eventType, reviewEventDto.placeId, DetailType.REVIEW_PHOTO)
+        
+        Json reviewJson = httpRequest.Get('https://triple.guide/reveiws/' + reviewEventDto.reviewId)
+        ReviewDTO reviewDto = ReviewDTO(reviewJson)
+        int photoCount = reviewDto.photoIds.size()
+        int pointDiff = 0
+
+        if (photoCount > 0 && (pointTransactionDto == null || pointTransactionDto.pointDiff == -1)) {
+            # 1장 이상 사진 첨부: 1점
+            pointDiff = 1
+        } 
+        else if(photoCount == 0 && pointTransactionDto.pointDiff == 1) {
+            # 사진 삭제하여 0개: 1점 회수
+            pointDiff = -1
+        }
+
+        if (pointDiff == 0) {
+            return null
+        }
+
+        return pointTransactionService.create(
+            reviewEventDto.userId,
+            EventType.REVIEW,
+            reviewEventDto.reviewId,
+            reviewEventDto.action,           
+            DetailType.REVIEW_PHOTO,
+            pointDiff
+        )
+    }
+
+    PointTransactionDTO changeReviewFirstPoint(ReviewEventDto reviewEventDto) {    
+        # 리뷰 수정 시에는 첫 리뷰 포인트 변경 없음
+        if (reviewEventDto.action == Action.MOD) {
+            return null
+        }
+
+        # 장소와 사용자, 첫 리뷰에 대한 마지막 트랜잭션
+        PointTransactionDTO pointTransactionDto = pointTransactionService.getLast(
+                        reviewEventDto.userId, reviewEventDto.eventType, reviewEventDto.placeId, DetailType.REVIEW_FIRST)
+
+        # placeId 기준으로 리뷰 작성시간 오름차순 첫번째 리뷰의 ID와 현재 적립할 리뷰의 ID가 같다면, 장소에 대한 첫 리뷰로 봅니다.
+        Json placeFirstReviewJson = httpRequest.Get(
+            'https://triple.guide/reveiws/?placeId=' + reviewEventDto.placeId + '&sort=createdAt,asc&limit=1')
+        placeFirstReviewDto = ReviewDTO(placeFirstReviewJson)        
+        
+        # 리뷰 작성 이벤트에 해당하는 리뷰와 장소 첫 리뷰가 다름
+        if (reviewEventDto.reviewId != placeFirstReviewDto.reviewId) {
+            return null
+        }
+
+        int pointDiff = 0
+        if (reviewEventDto.reviewId == placeFirstReviewDto.reviewId) {
+            if (reviewEventDto == Action.ADD && (pointTransactionDto == null || pointTransactionDto.pointDiff == -1)) {
+                # 첫 리뷰: 1점
+                pointDiff = 1
+            } 
+            else if (reviewEventDto == Action.DELETE && (pointTransactionDto != null || pointTransactionDto.pointDiff == 1)) {
+                # 첫 리뷰를 작성하고 리뷰 삭제: 1점 회수
+                pointDiff = -1
+            }
+        }
+
+        # 변경사항 없음
+        if (pointDiff == 0) {
+            return null
+        }
+        
+        return pointTransactionService.create(
+            reviewEventDto.userId,
+            EventType.REVIEW,
+            reviewEventDto.reviewId,
+            reviewEventDto.action,                                                        
+            DetailType.REVIEW_FIRST,
+            pointDiff
+        )
+    }
+}

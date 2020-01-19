@@ -1,0 +1,35 @@
+class PointTransactionService {
+
+    # Spring의 Bean DI를 가정
+    @Autowired
+    PointTransactionRepository pointTransactionRepo
+
+    PointTransactionDTO get(UUID pointTrasactionId) {
+        return pointTransactionRepo.get(pointTrasactionId=pointTrasactionId)
+    }
+
+    Page<PointTransactionDTO> getPage(int page=1, int size=20) {
+        return pointTransactionRepo.getPage(page, size)
+    }
+
+    PointTransactionDTO getLast(UUID userId) {
+        # 인자에 해당하는 마지막 트랜잭션 반환
+        return pointTransactionRepo.get(userId=userId)
+    }
+
+    PointTransactionDTO getLast(UUID userId, EventType eventType, UUID eventId, DetailType detailType) {
+        # 인자에 해당하는 마지막 트랜잭션 반환
+        return pointTransactionRepo.get(userId, eventType, eventId, detailType)
+    }
+
+    Page<PointTransactionDTO> getPage(UUID userId, int page=1, int size=20) {
+        return pointTransactionRepo.getPage(userId=userId, page, size)
+    }
+
+    @Transaction
+    PointTransactionDTO create(UUID userId, EventType eventType, UUID eventId, 
+                Action action, DetailType detailType, int pointDiff) {                
+        # userId의 마지막 트랜잭션에서 pointDiff를 더하여, point transaction을 저장
+        return pointTransactionRepo.create(userId, eventType, eventId, action, detailType, pointDiff)
+    }
+}

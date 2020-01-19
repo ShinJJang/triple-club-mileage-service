@@ -1,0 +1,29 @@
+class PointTransactionController {
+
+    # Spring의 Bean DI를 가정
+    @Autowired
+    PointTransactionService pointTransactionService
+
+    @Request.GET('/points/{pointTransactionId:UUID}')
+    PointTransactionDTO getLastPointTrasactionByUser(UUID pointTransactionId){
+        # 포인트 트랜잭션의 UUID로 조회        
+        pointTransactionService.get(pointTransactionId)
+    }
+
+    @Request.GET('/points/')
+    Page<PointTransactionDTO> getPointTrasactionsByUser(int pageNum, int size){
+        # 전체 point transaction paging으로 반환
+        return pointTransactionService.getPage(pageNum, size)
+    }
+
+    @Request.GET('/points/last/?userId={userId:UUID}')
+    PointTransactionDTO getLastPointTrasactionByUser(UUID userId){
+        # 사용자의 현재 point transaction 조회
+        return pointTransactionService.getLast(userId)
+    }
+    
+    @Request.GET('/points/?userId={userId:UUID}')
+    Page<PointTransactionDTO> getPointTrasactionsByUser(UUID userId, int pageNum, int size){
+        # user의 point transaction paging으로 반환
+        return pointTransactionService.getPage(userId, pageNum, size)
+    }

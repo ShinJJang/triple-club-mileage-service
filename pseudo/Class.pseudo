@@ -1,5 +1,5 @@
 class EventDTO {
-    EventType type
+    EventType eventType
     Action action    
 }
 
@@ -12,23 +12,51 @@ class ReviewEventDTO extends EventDTO {
 }
 
 class EventResponseDTO {
-    
+    List<UUID> pointTransactionIds
+    int pointDiff
+    int point
 }
 
-class PointDTO {
-    
+class ReviewDTO {
+    UUID reviewId
+    UUID userId
+    UUID placeId
+    List<UUID> photoIds
+    String content
+    Datetime createdAt
+}
+
+class PointTransactionDTO {
+    UUID pointTransactionId
+    UUID userId
+    EventType eventType
+    UUID eventId    
+    Action action
+    DetailType detailType
+    int point
+    int pointDiff
+
+    String getUUID() {
+        return makeUUID(id)
+    }
 }
 
 enum EventType {
     # readable text, help text
     REVIEW('리뷰', '상품, 장소 리뷰 관련 포인트'),
-    PURCHASE('구매', '구매 관련 포인트'),
+    RESERVATION('예약', '예약 관련 포인트'),
     EXPERIENCE('가이드', '가이드 보상 관련 포인트'),
     ...
 }
 
 enum Action {
     ADD('추가', '리뷰 작성, 구매, 가이드 보상'),
-    MOD('추가', '리뷰 변경, ...'),
+    MOD('변경', '리뷰 수정, ...'),
     DELETE('삭제', '리뷰 삭제, ...'),    
+}
+
+enum DetailType {
+    REVIEW_TEXT('리뷰 글 작성', '리뷰 글 작성으로 적립된 포인트'),
+    REVIEW_PHOTO('리뷰 사진 추가', '리뷰 사진 추가로 적립된 포인트'),
+    REVIEW_FIRST('리뷰 첫 작성', '리뷰 첫 작성으로 적립된 포인트'),
 }

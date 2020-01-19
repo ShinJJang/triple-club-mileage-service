@@ -1,50 +1,38 @@
 class EventController {
 
+    # Spring의 Bean DI를 가정
+    @Autowired
     ReviewEventService reviewEventService
-    PurchaseEventService purchaseEventService
+    @Autowired
+    ReserveEventService reserveEventService
+    @Autowired
     ExperienceEventService experienceEventService
 
-    @Request.POST
+    @Request.POST('/events')
     EventResponseDTO handlePostEvent(EventDTO eventDto) {
-        EventType type = eventDto.type
+        EventType eventType = eventDto.eventType
 
-        EventService eventService = selectEventService(type)
-        return getResult(eventService, eventDto)
+        EventService eventService = selectEventService(eventType)
+        return eventService.changePoint(eventDto)
     }
 
-    EventService selectEventService(EventType type) {
-        switch(type) {
+    EventService selectEventService(EventType eventType) {
+        switch(eventType) {
             case EventType.REVIEW:
                 eventService = reviewEventService
                 break
-            case EventType.PURCHASE:
-                eventService = purchaseEventService
+            case EventType.RESERVATION:
+                eventService = reserveEventService
                 break
             case EventType.EXPERIENCE:
                 eventService = experienceEventService
                 break
             default:
                 # error exception handler에서 처리
-                raise NotSupportException(type)
+                raise NotSupportException(eventType)
         }
 
         return eventService
-    }
-
-    EventResponseDTO getResult(EventService eventService, EventDto eventDto) {        
-        Action action = eventDto.action
-        
-        switch(action) {
-            case Action.ADD:
-                return eventService.create(eventDto)                
-            case Action.MOD:
-                return eventService.update(eventDto)
-            case Action.DELETE:
-                return eventService.delete(eventDto)
-            default:
-                # error exception handler에서 처리
-                raise NotSupportException(action)
-        }
     }
 
 }
