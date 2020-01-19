@@ -57,4 +57,5 @@ enum DetailType {
     REVIEW_TEXT('리뷰 글 작성', '리뷰 글 작성으로 적립된 포인트'),
     REVIEW_PHOTO('리뷰 사진 추가', '리뷰 사진 추가로 적립된 포인트'),
     REVIEW_FIRST('리뷰 첫 작성', '리뷰 첫 작성으로 적립된 포인트'),
+    ...
 }
