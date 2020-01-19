@@ -1,0 +1,28 @@
+class ReviewEventService {
+
+    PointTransactionService pointTransactionService
+
+    EventResponseDTO create(EventDto eventDto) {
+        ReviewEventDto reviewEventDto = (ReviewEventDto) eventDto        
+        int point = 0
+
+        # 1자 이상 텍스트 작성: 1점
+        int contentLength = reviewEventDto.content.length()
+        if (contentLength > 0) {
+            point += 1
+        }
+
+        # 1장 이상 사진 첨부: 1점
+        int photoCount = reviewEventDto.attachedPhotoIds.size()
+        if (photoCount > 0) {
+            point += 1
+        }
+
+        # 장소에 대한 첫 리뷰
+        # out of order를 고려하면, 리뷰 서비스의 작성시간을 가져와야함
+        if (pointTransactionService.isExistWithPlaceId(reviewEventDto.placeId) == false) {
+            point += 1
+        }
+        pointTransactionService
+    }
+}

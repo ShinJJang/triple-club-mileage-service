@@ -1,0 +1,34 @@
+class EventDTO {
+    EventType type
+    Action action    
+}
+
+class ReviewEventDTO extends EventDTO {
+    UUID reviewId
+    String content
+    List<UUID> attachedPhotoIds
+    UUID userId
+    UUID placeId
+}
+
+class EventResponseDTO {
+    
+}
+
+class PointDTO {
+    
+}
+
+enum EventType {
+    # readable text, help text
+    REVIEW('리뷰', '상품, 장소 리뷰 관련 포인트'),
+    PURCHASE('구매', '구매 관련 포인트'),
+    EXPERIENCE('가이드', '가이드 보상 관련 포인트'),
+    ...
+}
+
+enum Action {
+    ADD('추가', '리뷰 작성, 구매, 가이드 보상'),
+    MOD('추가', '리뷰 변경, ...'),
+    DELETE('삭제', '리뷰 삭제, ...'),    
+}

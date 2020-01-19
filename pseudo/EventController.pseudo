@@ -1,0 +1,50 @@
+class EventController {
+
+    ReviewEventService reviewEventService
+    PurchaseEventService purchaseEventService
+    ExperienceEventService experienceEventService
+
+    @Request.POST
+    EventResponseDTO handlePostEvent(EventDTO eventDto) {
+        EventType type = eventDto.type
+
+        EventService eventService = selectEventService(type)
+        return getResult(eventService, eventDto)
+    }
+
+    EventService selectEventService(EventType type) {
+        switch(type) {
+            case EventType.REVIEW:
+                eventService = reviewEventService
+                break
+            case EventType.PURCHASE:
+                eventService = purchaseEventService
+                break
+            case EventType.EXPERIENCE:
+                eventService = experienceEventService
+                break
+            default:
+                # error exception handler에서 처리
+                raise NotSupportException(type)
+        }
+
+        return eventService
+    }
+
+    EventResponseDTO getResult(EventService eventService, EventDto eventDto) {        
+        Action action = eventDto.action
+        
+        switch(action) {
+            case Action.ADD:
+                return eventService.create(eventDto)                
+            case Action.MOD:
+                return eventService.update(eventDto)
+            case Action.DELETE:
+                return eventService.delete(eventDto)
+            default:
+                # error exception handler에서 처리
+                raise NotSupportException(action)
+        }
+    }
+
+}
