@@ -29,7 +29,8 @@ class PointTransactionService {
     @Transaction
     PointTransactionDTO create(UUID userId, EventType eventType, UUID eventId, 
                 Action action, DetailType detailType, int pointDiff) {                
-        # userId에 해당하는 마지막 트랜잭션 시점의 point에 pointDiff를 더하여, 새로운 point transaction의 point로 저장
+        # userId로 Lock 필요                
+        # userId에 해당하는 마지막 트랜잭션 시점의 point에 pointDiff를 더하여, 새로운 point transaction의 point로 저장        
         return pointTransactionRepo.create(userId, eventType, eventId, action, detailType, pointDiff)
     }
     
